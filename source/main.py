@@ -7,10 +7,7 @@ from pathlib import Path
 
 import wikipediaapi
 
-from list_homosapiens_brain_structures.utils import (
-    scrape_sessions_from_wiki_class,
-    define_depth_for_every_subfield,
-)
+from source.utils import scrape_sessions_from_wiki_class, define_depth_for_every_subfield
 
 directory_path = Path(__file__).parent
 
@@ -103,5 +100,14 @@ for section, section_data in data.items():
         section, section_data, section_titles
     )
 
-with open(directory_path.parent / f"brain_structure_hierarchy_{today}.json", "w") as out_json:
-    json.dump(data_with_depth, out_json)
+organized_data = {"structures": {}}
+for section_name, data in data_with_depth.items():
+    if "Neurotransmitter pathways" == section_name:
+        organized_data["neurotransmitters"] = data
+    elif "Neural pathways" == section_name:
+        organized_data["neuronal_pathways"] = data
+    else:
+        organized_data["structures"][section_name] = data
+
+with open(directory_path.parent / f"human_brain_tree_{today}.json", "w") as out_json:
+    json.dump(organized_data, out_json)
