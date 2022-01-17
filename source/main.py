@@ -1,13 +1,18 @@
 import datetime
-import pickle
-from copy import copy
 import json
+import pickle
 import re
+from copy import copy
 from pathlib import Path
 
 import wikipediaapi
 
-from source.utils import scrape_sessions_from_wiki_class, define_depth_for_every_subfield
+from source.utils import (
+    define_depth_for_every_subfield,
+    scrape_sessions_from_wiki_class,
+)
+
+OUTPUT_FILE_STEM = "brain_structure_hierarchy"
 
 directory_path = Path(__file__).parent
 
@@ -24,7 +29,9 @@ wiki_api = wikipediaapi.Wikipedia(
 today = datetime.date.today()
 wiki_page = wiki_api.page("List_of_regions_in_the_human_brain")
 
-if not (backup_pickle_path := directory_path / "backups" / f"wiki_page_bak_{today}.pickle").exists():
+if not (
+    backup_pickle_path := directory_path / "backups" / f"wiki_page_bak_{today}.pickle"
+).exists():
     with open(backup_pickle_path, "wb") as out_bakfile:
         # Create a backup of the wikipedia page
         pickle.dump(wiki_page, out_bakfile)
@@ -100,14 +107,14 @@ for section, section_data in data.items():
         section, section_data, section_titles
     )
 
-organized_data = {"structures": {}}
+organized_data = {"neuronal_structure": {}}
 for section_name, data in data_with_depth.items():
     if "Neurotransmitter pathways" == section_name:
-        organized_data["neurotransmitters"] = data
+        organized_data["neurotransmitter"] = data
     elif "Neural pathways" == section_name:
-        organized_data["neuronal_pathways"] = data
+        organized_data["neuronal_pathway"] = data
     else:
-        organized_data["structures"][section_name] = data
+        organized_data["neuronal_structure"][section_name] = data
 
 with open(directory_path.parent / f"human_brain_tree_{today}.json", "w") as out_json:
     json.dump(organized_data, out_json)

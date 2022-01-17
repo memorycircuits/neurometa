@@ -8,6 +8,10 @@ authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]
 python = "^3.9"
 Wikipedia-API = "^0.5.4"
 
+[tool.poetry.group.dev.dependencies]
+black = "^21.12-beta.0"
+isort = "^5.10.1"
+
 [tool.poetry.dev-dependencies]
 
 [build-system]
