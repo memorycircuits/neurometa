@@ -2,6 +2,7 @@ import datetime
 import json
 import pickle
 import re
+import shutil
 from copy import copy
 from pathlib import Path
 
@@ -116,5 +117,48 @@ for section_name, data in data_with_depth.items():
     else:
         organized_data["neuronal_structure"][section_name] = data
 
-with open(directory_path.parent / f"human_brain_tree_{today}.json", "w") as out_json:
-    json.dump(organized_data, out_json)
+organized_data["neuro_endocrine_system"] = organized_data["neuronal_structure"].pop("Neuro endocrine systems")
+organized_data["neuro_vascular_system"] = organized_data["neuronal_structure"].pop("Neuro vascular systems")
+organized_data["dural_meningeal_system"] = organized_data["neuronal_structure"].pop("Dural meningeal system")
+
+flattened_structure_dataset = set()
+
+
+def recursive_set_adder(data_to_add):
+    if isinstance(data_to_add, str):
+        flattened_structure_dataset.add(data_to_add.capitalize())
+    elif isinstance(data_to_add, dict):
+        for subsection_name, subsection in data_to_add.items():
+            if any(data.isdigit() for data in subsection):
+                for daughter_tag in subsection:
+                    flattened_structure_dataset.add(f"{subsection_name} {daughter_tag}")
+            else:
+                recursive_set_adder(subsection)
+    else:
+        for data in data_to_add:
+            recursive_set_adder(data)
+
+
+for subsection in organized_data["neuronal_structure"].values():
+    recursive_set_adder(subsection)
+
+flattened_structure_dataset.remove("Surface")   # Absurd brain structure.
+
+organized_data["neuronal_structure_flat"] = list(sorted(flattened_structure_dataset))
+organized_data = dict(sorted(organized_data.items()))
+
+most_recent_brain_tree_path = directory_path.parent / "recent_human_brain_tree.json"
+with open(most_recent_brain_tree_path, "r") as in_json:
+    previous_dataset = json.load(in_json)
+
+# I/O operations
+if previous_dataset != organized_data:
+    most_recent_brain_tree_history_path = directory_path.parent / "human_brain_trees" / f"human_brain_tree_{today}.json"
+    with open(most_recent_brain_tree_history_path, "w") as out_json:
+        json.dump(organized_data, out_json)
+
+    shutil.copy(most_recent_brain_tree_history_path, most_recent_brain_tree_path)
+
+    print("Change since last run, new entry added")
+else:
+    print("No change since last run, adding a new entry is redundant (skipping save)")
