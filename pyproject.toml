@@ -7,6 +7,8 @@ authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 Wikipedia-API = "^0.5.4"
+pandas = "^1.4.0"
+odfpy = "^1.4.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^21.12-beta.0"

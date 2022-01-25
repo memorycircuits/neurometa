@@ -8,10 +8,11 @@ from pathlib import Path
 
 import wikipediaapi
 
-from source.utils import (
-    define_depth_for_every_subfield,
+from human_brain_tree.source.utils import (
     scrape_sessions_from_wiki_class,
+    define_depth_for_every_subfield,
 )
+
 
 OUTPUT_FILE_STEM = "brain_structure_hierarchy"
 
@@ -117,9 +118,15 @@ for section_name, data in data_with_depth.items():
     else:
         organized_data["neuronal_structure"][section_name] = data
 
-organized_data["neuro_endocrine_system"] = organized_data["neuronal_structure"].pop("Neuro endocrine systems")
-organized_data["neuro_vascular_system"] = organized_data["neuronal_structure"].pop("Neuro vascular systems")
-organized_data["dural_meningeal_system"] = organized_data["neuronal_structure"].pop("Dural meningeal system")
+organized_data["neuro_endocrine_system"] = organized_data["neuronal_structure"].pop(
+    "Neuro endocrine systems"
+)
+organized_data["neuro_vascular_system"] = organized_data["neuronal_structure"].pop(
+    "Neuro vascular systems"
+)
+organized_data["dural_meningeal_system"] = organized_data["neuronal_structure"].pop(
+    "Dural meningeal system"
+)
 
 flattened_structure_dataset = set()
 
@@ -142,7 +149,7 @@ def recursive_set_adder(data_to_add):
 for subsection in organized_data["neuronal_structure"].values():
     recursive_set_adder(subsection)
 
-flattened_structure_dataset.remove("Surface")   # Absurd brain structure.
+flattened_structure_dataset.remove("Surface")  # Absurd brain structure.
 
 organized_data["neuronal_structure_flat"] = list(sorted(flattened_structure_dataset))
 organized_data = dict(sorted(organized_data.items()))
@@ -153,7 +160,9 @@ with open(most_recent_brain_tree_path, "r") as in_json:
 
 # I/O operations
 if previous_dataset != organized_data:
-    most_recent_brain_tree_history_path = directory_path.parent / "human_brain_trees" / f"human_brain_tree_{today}.json"
+    most_recent_brain_tree_history_path = (
+        directory_path.parent / "human_brain_trees" / f"human_brain_tree_{today}.json"
+    )
     with open(most_recent_brain_tree_history_path, "w") as out_json:
         json.dump(organized_data, out_json)
 
