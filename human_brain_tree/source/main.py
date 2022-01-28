@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 import pickle
 import re
 import shutil
@@ -14,15 +15,14 @@ from human_brain_tree.source.utils import (
 )
 
 
-OUTPUT_FILE_STEM = "brain_structure_hierarchy"
-
-directory_path = Path(__file__).parent
-
 re_and = re.compile(r" and ")
 deli = re.compile(r"[,;]")
 parenthesis_exp = re.compile(r"\([\w,; ]*\)")
 id_followed_by_numbering = re.compile(r"^[\w ]* \d+")
 
+directory_path = Path(__file__).parent
+backups_path = directory_path / "backups"
+os.makedirs(backups_path, exist_ok=True)
 
 wiki_api = wikipediaapi.Wikipedia(
     language="en", extract_format=wikipediaapi.ExtractFormat.WIKI
@@ -30,13 +30,6 @@ wiki_api = wikipediaapi.Wikipedia(
 
 today = datetime.date.today()
 wiki_page = wiki_api.page("List_of_regions_in_the_human_brain")
-
-if not (
-    backup_pickle_path := directory_path / "backups" / f"wiki_page_bak_{today}.pickle"
-).exists():
-    with open(backup_pickle_path, "wb") as out_bakfile:
-        # Create a backup of the wikipedia page
-        pickle.dump(wiki_page, out_bakfile)
 
 section_titles = {}
 for section in wiki_page.sections:
@@ -163,10 +156,15 @@ if previous_dataset != organized_data:
     most_recent_brain_tree_history_path = (
         directory_path.parent / "human_brain_trees" / f"human_brain_tree_{today}.json"
     )
-    with open(most_recent_brain_tree_history_path, "w") as out_json:
+    with open(most_recent_brain_tree_path, "w") as out_json:
         json.dump(organized_data, out_json)
 
-    shutil.copy(most_recent_brain_tree_history_path, most_recent_brain_tree_path)
+    if not (
+            backup_pickle_path := backups_path / f"wiki_page_bak_{today}.pickle"
+    ).exists():
+        with open(backup_pickle_path, "wb") as out_bakfile:
+            # Create a backup of the wikipedia page
+            pickle.dump(wiki_page, out_bakfile)
 
     print("Change since last run, new entry added")
 else:
