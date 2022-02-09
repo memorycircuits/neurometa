@@ -1,14 +1,11 @@
-import datetime
-import json
 import os
-import pickle
 import re
-import shutil
 from copy import copy
 from pathlib import Path
 
 import wikipediaapi
 
+from human_brain_tree.source.save import save_data
 from human_brain_tree.source.utils import (
     scrape_sessions_from_wiki_class,
     define_depth_for_every_subfield,
@@ -28,7 +25,6 @@ wiki_api = wikipediaapi.Wikipedia(
     language="en", extract_format=wikipediaapi.ExtractFormat.WIKI
 )
 
-today = datetime.date.today()
 wiki_page = wiki_api.page("List_of_regions_in_the_human_brain")
 
 section_titles = {}
@@ -143,29 +139,27 @@ for subsection in organized_data["neuronal_structure"].values():
     recursive_set_adder(subsection)
 
 flattened_structure_dataset.remove("Surface")  # Absurd brain structure.
+flattened_structure_dataset = list(sorted(flattened_structure_dataset))
 
-organized_data["neuronal_structure_flat"] = list(sorted(flattened_structure_dataset))
+standard_name_to_names = {}
+for names in flattened_structure_dataset:
+    parenthesis_content = parenthesis_exp.findall(names)
+    if not parenthesis_content:
+        continue
+
+    parenthesis_content = parenthesis_content[0][1:-1].strip()
+    standard_name = names.split("(")[0].strip().lower()
+    if "," in parenthesis_content:
+        iterable = sorted(parenthesis_content.split(","))
+    elif "and" in parenthesis_content:
+        iterable = sorted(parenthesis_content.split("and"))
+    else:
+        iterable = (parenthesis_content,)
+    filtered_iterable = [name.replace("also", "").strip().lower() for name in iterable if len(name) > 3]
+    standard_name_to_names[names] = (standard_name, *iterable)
+
+organized_data["neuronal_structure_flat"] = flattened_structure_dataset
+organized_data["standard_name_to_names"] = sorted(standard_name_to_names.items())
 organized_data = dict(sorted(organized_data.items()))
 
-most_recent_brain_tree_path = directory_path.parent / "recent_human_brain_tree.json"
-with open(most_recent_brain_tree_path, "r") as in_json:
-    previous_dataset = json.load(in_json)
-
-# I/O operations
-if previous_dataset != organized_data:
-    most_recent_brain_tree_history_path = (
-        directory_path.parent / "human_brain_trees" / f"human_brain_tree_{today}.json"
-    )
-    with open(most_recent_brain_tree_path, "w") as out_json:
-        json.dump(organized_data, out_json)
-
-    if not (
-            backup_pickle_path := backups_path / f"wiki_page_bak_{today}.pickle"
-    ).exists():
-        with open(backup_pickle_path, "wb") as out_bakfile:
-            # Create a backup of the wikipedia page
-            pickle.dump(wiki_page, out_bakfile)
-
-    print("Change since last run, new entry added")
-else:
-    print("No change since last run, adding a new entry is redundant (skipping save)")
+save_data(organized_data, wiki_page, directory_path.parent)
