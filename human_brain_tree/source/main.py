@@ -159,7 +159,7 @@ for names in flattened_structure_dataset:
     standard_name_to_names[names] = (standard_name, *iterable)
 
 organized_data["neuronal_structure_flat"] = flattened_structure_dataset
-organized_data["standard_name_to_names"] = sorted(standard_name_to_names.items())
+organized_data["standard_name_to_names"] = dict(sorted(standard_name_to_names.items()))
 organized_data = dict(sorted(organized_data.items()))
 
 save_data(organized_data, wiki_page, directory_path.parent)
