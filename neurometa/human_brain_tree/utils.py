@@ -26,3 +26,16 @@ def define_depth_for_every_subfield(rem_section, rem_section_data, previous_subs
         subsections["Substructures"] = substructures
         return subsections
     return substructures
+
+
+def serialize_wikipedia_sections(wiki_page):
+    def serializer(section):
+        return {
+            "level": section.level,
+            "title": section.title.strip(),
+            "text": section.text.strip(),
+            "sections": [serializer(sub_sub_section) for sub_sub_section in section.sections]
+        }
+
+    result = [serializer(section) for section in wiki_page.sections]
+    return result
