@@ -5,7 +5,7 @@ import wikipediaapi
 
 from neurometa.human_brain_tree.utils import (
     scrape_sessions_from_wiki_class,
-    define_depth_for_every_subfield
+    define_depth_for_every_subfield,
 )
 
 
@@ -15,9 +15,13 @@ def human_brain_tree() -> dict:
             flattened_structure_dataset.add(data_to_add.capitalize())
         elif isinstance(data_to_add, dict):
             for subsection_name, recursive_subsection in data_to_add.items():
-                if any(recursive_data.isdigit() for recursive_data in recursive_subsection):
+                if any(
+                    recursive_data.isdigit() for recursive_data in recursive_subsection
+                ):
                     for daughter_tag in recursive_subsection:
-                        flattened_structure_dataset.add(f"{subsection_name} {daughter_tag}")
+                        flattened_structure_dataset.add(
+                            f"{subsection_name} {daughter_tag}"
+                        )
                 else:
                     recursive_set_adder(recursive_subsection)
         else:
@@ -128,7 +132,7 @@ def human_brain_tree() -> dict:
     for subsection in organized_data["neuronal_structure"].values():
         recursive_set_adder(subsection)
 
-    flattened_structure_dataset.remove("Surface")     # Absurd brain structure.
+    flattened_structure_dataset.remove("Surface")  # Absurd brain structure.
     flattened_structure_dataset = list(sorted(flattened_structure_dataset))
 
     standard_name_to_names = {}
@@ -145,11 +149,17 @@ def human_brain_tree() -> dict:
             iterable = sorted(parenthesis_content.split("and"))
         else:
             iterable = (parenthesis_content,)
-        filtered_iterable = [name.replace("also", "").strip().lower() for name in iterable if len(name) > 3]
+        filtered_iterable = [
+            name.replace("also", "").strip().lower()
+            for name in iterable
+            if len(name) > 3
+        ]
         standard_name_to_names[names] = (standard_name, *iterable)
 
     organized_data["neuronal_structure_flat"] = flattened_structure_dataset
-    organized_data["standard_name_to_names"] = dict(sorted(standard_name_to_names.items()))
+    organized_data["standard_name_to_names"] = dict(
+        sorted(standard_name_to_names.items())
+    )
     organized_data = dict(sorted(organized_data.items()))
 
     return organized_data

@@ -1,5 +1,13 @@
 # Neurometa
 
+## Installation
+
+Most users don't need to install `neurometa` as they can just grab the output from the backups folder. Install with `pip`:
+
+```shell
+pip install neurometa
+```
+
 ## Content
 
 ### Brain structure tree generator

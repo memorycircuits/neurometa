@@ -24,7 +24,9 @@ def model_organism() -> dict:
 
         return unpacked_data
 
-    wiki_api = wikipediaapi.Wikipedia(language="en", extract_format=wikipediaapi.ExtractFormat.WIKI)
+    wiki_api = wikipediaapi.Wikipedia(
+        language="en", extract_format=wikipediaapi.ExtractFormat.WIKI
+    )
     wiki_page = wiki_api.page("List_of_model_organisms")
 
     result = {}

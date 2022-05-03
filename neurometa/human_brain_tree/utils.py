@@ -34,7 +34,9 @@ def serialize_wikipedia_sections(wiki_page):
             "level": section.level,
             "title": section.title.strip(),
             "text": section.text.strip(),
-            "sections": [serializer(sub_sub_section) for sub_sub_section in section.sections]
+            "sections": [
+                serializer(sub_sub_section) for sub_sub_section in section.sections
+            ],
         }
 
     result = [serializer(section) for section in wiki_page.sections]
