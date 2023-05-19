@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Optional
 
 import wikipediaapi
@@ -8,16 +9,22 @@ def model_organism() -> dict:
         unpacked_data = current_dict or {}
         if recursive_section.text:
             for line in recursive_section.text.split("\n"):
-                processed_line = line.split(",")[0].replace(" and ", " & ").strip()
-                if not processed_line or "References" in processed_line:
+                processed_line = line.split(",")[0].strip()
+
+                if not processed_line or "References" in processed_line or ":" in processed_line:
                     continue
 
-                parenthesis_split = processed_line.split("(")
+                parenthesis_split = processed_line.split(" (")
+                scientific_names = parenthesis_split[0].strip()
+                try:
+                    cultural_name = parenthesis_split[1].replace(")", "").strip().capitalize()
+                except IndexError:
+                    # No cultural name defined
+                    cultural_name = ""
 
-                if len(parenthesis_split) > 1:
-                    unpacked_data[parenthesis_split[0].strip()] = processed_line
-                else:
-                    unpacked_data[processed_line] = processed_line
+                for species_name in scientific_names.split(" and "):
+                    unpacked_data[species_name.capitalize()] = cultural_name
+
         else:
             for sub_section in recursive_section.sections:
                 unpacked_data = section_unpacker(sub_section, unpacked_data)

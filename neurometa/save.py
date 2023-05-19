@@ -4,7 +4,6 @@ from datetime import date
 from pprint import pprint
 
 from deepdiff import DeepDiff
-from orjson import orjson
 from pydantic import DirectoryPath
 
 from neurometa.human_brain_tree.main import human_brain_tree
