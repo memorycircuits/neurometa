@@ -1,15 +1,50 @@
+import json
+import os
 import re
 from copy import copy
+from datetime import date
+from pathlib import Path
+from pprint import pprint
+from typing import Optional
 
+import pandas as pd
 import wikipediaapi
-
-from neurometa.human_brain_tree.utils import (
-    scrape_sessions_from_wiki_class,
-    define_depth_for_every_subfield,
-)
+from deepdiff import DeepDiff
 
 
-def human_brain_tree() -> dict:
+def _scrape_sessions_from_wiki_class(root_section):
+    if root_section.sections:
+        return {
+            deeper_section.title: _scrape_sessions_from_wiki_class(deeper_section)
+            for deeper_section in root_section.sections
+        }
+    else:
+        return root_section.title
+
+
+def _define_depth_for_every_subfield(
+    rem_section, rem_section_data, previous_subsection
+):
+    current_subsections = previous_subsection[rem_section]
+
+    subsections, substructures = {}, []
+    for i, data in enumerate(rem_section_data, start=1):
+        if isinstance(data, dict):
+            subsections.update(data)
+        elif data in current_subsections:
+            subsections[data] = _define_depth_for_every_subfield(
+                data, rem_section_data[i:], current_subsections
+            )
+        else:
+            substructures.append(data)
+
+    if subsections:
+        subsections["Substructures"] = substructures
+        return subsections
+    return substructures
+
+
+def scrape_human_brain_tree() -> dict:
     def recursive_set_adder(data_to_add):
         if isinstance(data_to_add, str):
             flattened_structure_dataset.add(data_to_add.capitalize())
@@ -40,7 +75,7 @@ def human_brain_tree() -> dict:
 
     section_titles = {}
     for section in wiki_page.sections:
-        section_titles[section.title] = scrape_sessions_from_wiki_class(section)
+        section_titles[section.title] = _scrape_sessions_from_wiki_class(section)
 
     data, section_data = {}, []
     section, deeper_section, current_section_field = None, None, None
@@ -104,7 +139,7 @@ def human_brain_tree() -> dict:
 
     data_with_depth = {}
     for section, section_data in data.items():
-        data_with_depth[section] = define_depth_for_every_subfield(
+        data_with_depth[section] = _define_depth_for_every_subfield(
             section, section_data, section_titles
         )
 
@@ -149,7 +184,7 @@ def human_brain_tree() -> dict:
             iterable = sorted(parenthesis_content.split("and"))
         else:
             iterable = (parenthesis_content,)
-        filtered_iterable = [
+        [
             name.replace("also", "").strip().lower()
             for name in iterable
             if len(name) > 3
@@ -163,3 +198,127 @@ def human_brain_tree() -> dict:
     organized_data = dict(sorted(organized_data.items()))
 
     return organized_data
+
+
+def scrape_neurotransmitter() -> dict:
+    standard_neurotransmitter_names, neurotransmitter_with_alternative_names = [], []
+    for row in pd.read_excel(
+        pkgutil.get_data(__name__, "wikipedia_table.ods")
+    ).iterrows():
+        row = row[1]
+        name, abbreviation = row[1:3]
+
+        name = name.strip().replace("\xa0", " ")
+        if "(" in name:
+            name, alternative_name = name.split("(")
+            name = name.strip()
+            alternative_name = alternative_name.strip(") ")
+        else:
+            alternative_name = None
+
+        standard_neurotransmitter_names.append(name.lower().replace(" ", "_"))
+
+        if isinstance(abbreviation, float):  # abbreviation is nan
+            names = name
+        else:
+            abbreviation = abbreviation.strip().replace("\xa0", " ")
+            names = f"{name}; {abbreviation}"
+        if alternative_name:
+            names += f"; {alternative_name}"
+
+        neurotransmitter_with_alternative_names.append(names)
+
+    return dict(
+        zip(standard_neurotransmitter_names, neurotransmitter_with_alternative_names)
+    )
+
+
+def scrape_model_organism() -> dict:
+    def section_unpacker(recursive_section, current_dict: Optional[dict] = None):
+        unpacked_data = current_dict or {}
+        if recursive_section.text:
+            for line in recursive_section.text.split("\n"):
+                processed_line = line.split(",")[0].strip()
+
+                if (
+                    not processed_line
+                    or "References" in processed_line
+                    or ":" in processed_line
+                ):
+                    continue
+
+                parenthesis_split = processed_line.split(" (")
+                scientific_names = parenthesis_split[0].strip()
+                try:
+                    cultural_name = (
+                        parenthesis_split[1].replace(")", "").strip().capitalize()
+                    )
+                except IndexError:
+                    # No cultural name defined
+                    cultural_name = ""
+
+                for species_name in scientific_names.split(" and "):
+                    unpacked_data[species_name.capitalize()] = cultural_name
+
+        else:
+            for sub_section in recursive_section.sections:
+                unpacked_data = section_unpacker(sub_section, unpacked_data)
+
+        return unpacked_data
+
+    wiki_api = wikipediaapi.Wikipedia(
+        language="en", extract_format=wikipediaapi.ExtractFormat.WIKI
+    )
+    wiki_page = wiki_api.page("List_of_model_organisms")
+
+    result = {}
+    for section in wiki_page.sections:
+        if "Eukaryotes" == section.title:
+            for eu_section in section.sections:
+                result[eu_section.title] = section_unpacker(section)
+        else:
+            result[section.title] = section_unpacker(section)
+
+    return result
+
+
+def save_all(output_directory: Path, make_directories: bool = False) -> None:
+    datasets = {
+        "scrape_human_brain_tree": scrape_human_brain_tree(),
+        "scrape_model_organism": scrape_model_organism(),
+        "neurotransmitter": scrape_neurotransmitter(),
+    }
+    for dataset_label, dataset in datasets.items():
+        print(f"Saving {dataset_label} dataset")
+        dataset_dir = output_directory / dataset_label
+        if make_directories:
+            os.mkdir(dataset_dir)
+
+        try:
+            latest_dataset_filename = str(os.listdir(dataset_dir)[-1])
+        except IndexError:
+            latest_dataset_filename = None
+
+        if latest_dataset_filename:
+            assert latest_dataset_filename.startswith(
+                dataset_label
+            ), f"dataset_label={dataset_label}, should be at the start of the filename"
+
+            with open(dataset_dir / latest_dataset_filename, "rb") as in_json:
+                latest_dataset = json.load(in_json)
+
+            difference = DeepDiff(dataset, latest_dataset, ignore_order=True)
+            difference.pop("type_changes", None)
+            if not difference:
+                return print(
+                    "Done: No change in data since last save, nothing new to store"
+                )
+
+            print("Difference:")
+            pprint(difference, indent=2, width=200)
+
+        new_dataset_filename = dataset_dir / f"{dataset_label}_{date.today()}.json"
+        with open(new_dataset_filename, "w") as out_json:
+            json.dump(dataset, out_json)
+
+        print(f"Done: New dataset saved to {new_dataset_filename}\n\n")

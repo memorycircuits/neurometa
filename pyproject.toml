@@ -17,19 +17,18 @@ packages = [{include = "neurometa"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pydantic = "^1.10.0"
-click = "^8.1.3"
 
-Wikipedia-API = "^0.5.4"
+pandas = { version = "*", extras = ["performance", "excel"] }
 
-pandas = "^1.4.0"
-odfpy = "^1.4.1"
-deepdiff = "^5.8.0"
+deepdiff = { version = "^5.8.0", optional = false }
+Wikipedia-API = { version = "^0.5.4", optional = false }
+
+[tool.poetry.extras]
+gen = ["Wikipedia-API", "deepdiff"]
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
 isort = "*"
-
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
