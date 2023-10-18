@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurometa"
-version = "0.1.1"
+version = "0.2.0"
 description = "Package for generating metadata related to neuroscience"
 authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]
 maintainers = ["Can H. Tartanoglu <canhtart@gmail.com>"]
