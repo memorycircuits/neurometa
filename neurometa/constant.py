@@ -212,6 +212,7 @@ class NeuroanatomicalDirection(Enum):
     VENTRAL = "ventral"
     VENTRAL_LATERAL = "ventral lateral"
     VENTRAL_MEDIAL = "ventral medial"
+    NONE = None
 
 
 class BrainStructure(Enum):
@@ -573,3 +574,11 @@ class BrainStructure(Enum):
     WING_OF_CENTRAL_LOBULE = "wing of central lobule"
     ZAHN_ARTERIES = "zahn arteries"
     ZONA_INCERTA = "zona incerta"
+
+
+class GeneExpression(Enum):
+    KNOCK_OUT = "knock-out"
+    KNOCK_IN = "knock-in"
+    KNOCK_DOWN = "knock-down"
+    KNOCK_SIDEWAYS = "knock-sideways"
+    OVEREXPRESSION = "overexpression"
