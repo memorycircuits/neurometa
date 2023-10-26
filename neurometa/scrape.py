@@ -184,11 +184,7 @@ def scrape_human_brain_tree() -> dict:
             iterable = sorted(parenthesis_content.split("and"))
         else:
             iterable = (parenthesis_content,)
-        [
-            name.replace("also", "").strip().lower()
-            for name in iterable
-            if len(name) > 3
-        ]
+        [name.replace("also", "").strip().lower() for name in iterable if len(name) > 3]
         standard_name_to_names[names] = (standard_name, *iterable)
 
     organized_data["neuronal_structure_flat"] = flattened_structure_dataset
