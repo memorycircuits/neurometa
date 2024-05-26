@@ -1,5 +1,6 @@
 import json
 import os
+import pkgutil
 import re
 from copy import copy
 from datetime import date
@@ -22,9 +23,7 @@ def _scrape_sessions_from_wiki_class(root_section):
         return root_section.title
 
 
-def _define_depth_for_every_subfield(
-    rem_section, rem_section_data, previous_subsection
-):
+def _define_depth_for_every_subfield(rem_section, rem_section_data, previous_subsection):
     current_subsections = previous_subsection[rem_section]
 
     subsections, substructures = {}, []
@@ -32,9 +31,7 @@ def _define_depth_for_every_subfield(
         if isinstance(data, dict):
             subsections.update(data)
         elif data in current_subsections:
-            subsections[data] = _define_depth_for_every_subfield(
-                data, rem_section_data[i:], current_subsections
-            )
+            subsections[data] = _define_depth_for_every_subfield(data, rem_section_data[i:], current_subsections)
         else:
             substructures.append(data)
 
@@ -50,13 +47,9 @@ def scrape_human_brain_tree() -> dict:
             flattened_structure_dataset.add(data_to_add.capitalize())
         elif isinstance(data_to_add, dict):
             for subsection_name, recursive_subsection in data_to_add.items():
-                if any(
-                    recursive_data.isdigit() for recursive_data in recursive_subsection
-                ):
+                if any(recursive_data.isdigit() for recursive_data in recursive_subsection):
                     for daughter_tag in recursive_subsection:
-                        flattened_structure_dataset.add(
-                            f"{subsection_name} {daughter_tag}"
-                        )
+                        flattened_structure_dataset.add(f"{subsection_name} {daughter_tag}")
                 else:
                     recursive_set_adder(recursive_subsection)
         else:
@@ -67,9 +60,7 @@ def scrape_human_brain_tree() -> dict:
     parenthesis_exp = re.compile(r"\([\w,; ]*\)")
     id_followed_by_numbering = re.compile(r"^[\w ]* \d+")
 
-    wiki_api = wikipediaapi.Wikipedia(
-        language="en", extract_format=wikipediaapi.ExtractFormat.WIKI
-    )
+    wiki_api = wikipediaapi.Wikipedia(language="en", extract_format=wikipediaapi.ExtractFormat.WIKI)
 
     wiki_page = wiki_api.page("List_of_regions_in_the_human_brain")
 
@@ -77,8 +68,9 @@ def scrape_human_brain_tree() -> dict:
     for section in wiki_page.sections:
         section_titles[section.title] = _scrape_sessions_from_wiki_class(section)
 
-    data, section_data = {}, []
-    section, deeper_section, current_section_field = None, None, None
+    data = {}
+    section_data = []
+    section = None
     for line in wiki_page.text.splitlines():
         if "Related topics" in line:
             break
@@ -92,9 +84,7 @@ def scrape_human_brain_tree() -> dict:
             section = line
         else:
             assert section
-            if (parenthesis_exp_findings := re.findall(parenthesis_exp, line)) and len(
-                parenthesis_exp_findings
-            ) == 1:
+            if (parenthesis_exp_findings := re.findall(parenthesis_exp, line)) and len(parenthesis_exp_findings) == 1:
                 split_line = re.split(parenthesis_exp, line)
                 if len(split_line) == 2:
                     if not split_line[1]:
@@ -139,9 +129,7 @@ def scrape_human_brain_tree() -> dict:
 
     data_with_depth = {}
     for section, section_data in data.items():
-        data_with_depth[section] = _define_depth_for_every_subfield(
-            section, section_data, section_titles
-        )
+        data_with_depth[section] = _define_depth_for_every_subfield(section, section_data, section_titles)
 
     organized_data = {"neuronal_structure": {}}
     for section_name, data in data_with_depth.items():
@@ -152,15 +140,9 @@ def scrape_human_brain_tree() -> dict:
         else:
             organized_data["neuronal_structure"][section_name] = data
 
-    organized_data["neuro_endocrine_system"] = organized_data["neuronal_structure"].pop(
-        "Neuro endocrine systems"
-    )
-    organized_data["neuro_vascular_system"] = organized_data["neuronal_structure"].pop(
-        "Neuro vascular systems"
-    )
-    organized_data["dural_meningeal_system"] = organized_data["neuronal_structure"].pop(
-        "Dural meningeal system"
-    )
+    organized_data["neuro_endocrine_system"] = organized_data["neuronal_structure"].pop("Neuro endocrine systems")
+    organized_data["neuro_vascular_system"] = organized_data["neuronal_structure"].pop("Neuro vascular systems")
+    organized_data["dural_meningeal_system"] = organized_data["neuronal_structure"].pop("Dural meningeal system")
 
     flattened_structure_dataset = set()
 
@@ -188,9 +170,7 @@ def scrape_human_brain_tree() -> dict:
         standard_name_to_names[names] = (standard_name, *iterable)
 
     organized_data["neuronal_structure_flat"] = flattened_structure_dataset
-    organized_data["standard_name_to_names"] = dict(
-        sorted(standard_name_to_names.items())
-    )
+    organized_data["standard_name_to_names"] = dict(sorted(standard_name_to_names.items()))
     organized_data = dict(sorted(organized_data.items()))
 
     return organized_data
@@ -198,9 +178,7 @@ def scrape_human_brain_tree() -> dict:
 
 def scrape_neurotransmitter() -> dict:
     standard_neurotransmitter_names, neurotransmitter_with_alternative_names = [], []
-    for row in pd.read_excel(
-        pkgutil.get_data(__name__, "wikipedia_table.ods")
-    ).iterrows():
+    for row in pd.read_excel(pkgutil.get_data(__name__, "wikipedia_table.ods")).iterrows():
         row = row[1]
         name, abbreviation = row[1:3]
 
@@ -224,9 +202,7 @@ def scrape_neurotransmitter() -> dict:
 
         neurotransmitter_with_alternative_names.append(names)
 
-    return dict(
-        zip(standard_neurotransmitter_names, neurotransmitter_with_alternative_names)
-    )
+    return dict(zip(standard_neurotransmitter_names, neurotransmitter_with_alternative_names))
 
 
 def scrape_model_organism() -> dict:
@@ -236,19 +212,13 @@ def scrape_model_organism() -> dict:
             for line in recursive_section.text.split("\n"):
                 processed_line = line.split(",")[0].strip()
 
-                if (
-                    not processed_line
-                    or "References" in processed_line
-                    or ":" in processed_line
-                ):
+                if not processed_line or "References" in processed_line or ":" in processed_line:
                     continue
 
                 parenthesis_split = processed_line.split(" (")
                 scientific_names = parenthesis_split[0].strip()
                 try:
-                    cultural_name = (
-                        parenthesis_split[1].replace(")", "").strip().capitalize()
-                    )
+                    cultural_name = parenthesis_split[1].replace(")", "").strip().capitalize()
                 except IndexError:
                     # No cultural name defined
                     cultural_name = ""
@@ -262,9 +232,7 @@ def scrape_model_organism() -> dict:
 
         return unpacked_data
 
-    wiki_api = wikipediaapi.Wikipedia(
-        language="en", extract_format=wikipediaapi.ExtractFormat.WIKI
-    )
+    wiki_api = wikipediaapi.Wikipedia(language="en", extract_format=wikipediaapi.ExtractFormat.WIKI)
     wiki_page = wiki_api.page("List_of_model_organisms")
 
     result = {}
@@ -306,9 +274,7 @@ def save_all(output_directory: Path, make_directories: bool = False) -> None:
             difference = DeepDiff(dataset, latest_dataset, ignore_order=True)
             difference.pop("type_changes", None)
             if not difference:
-                return print(
-                    "Done: No change in data since last save, nothing new to store"
-                )
+                return print("Done: No change in data since last save, nothing new to store")
 
             print("Difference:")
             pprint(difference, indent=2, width=200)

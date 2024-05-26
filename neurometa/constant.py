@@ -21,9 +21,7 @@ class Neurotransmitter(Enum):
     CARBON_MONOXIDE = "carbon monoxide"
     CHOLECYSTOKININ = "cholecystokinin"
     CHROMOGRANIN_A = "chromogranin a"
-    COCAINE_AND_AMPHETAMINE_REGULATED_TRANSCRIPT = (
-        "cocaine and amphetamine regulated transcript"
-    )
+    COCAINE_AND_AMPHETAMINE_REGULATED_TRANSCRIPT = "cocaine and amphetamine regulated transcript"
     COPEPTIN = "copeptin"
     CORTICOTROPIN_RELEASING_HORMONE = "corticotropin releasing hormone"
     DOPAMINE = "dopamine"
@@ -83,9 +81,7 @@ class Neurotransmitter(Enum):
     PARATHYROID_HORMONE_RELATED_PROTEIN = "parathyroid hormone related protein"
     PEPTIDE_YY = "peptide yy"
     PHENETHYLAMINE = "phenethylamine"
-    PITUITARY_ADENYLATE_CYCLASE_ACTIVATING_PEPTIDE = (
-        "pituitary adenylate cyclase activating peptide"
-    )
+    PITUITARY_ADENYLATE_CYCLASE_ACTIVATING_PEPTIDE = "pituitary adenylate cyclase activating peptide"
     PROLACTIN_RELEASING_PEPTIDE = "prolactin releasing peptide"
     PROOPIOMELANOCORTIN = "proopiomelanocortin"
     PYROGLUTAMYLATED_RFAMIDE_PEPTIDE = "pyroglutamylated rfamide peptide"
@@ -212,7 +208,7 @@ class NeuroanatomicalDirection(Enum):
     VENTRAL = "ventral"
     VENTRAL_LATERAL = "ventral lateral"
     VENTRAL_MEDIAL = "ventral medial"
-    NONE = None
+    NULL = "null"
 
 
 class BrainStructure(Enum):
@@ -582,3 +578,31 @@ class GeneExpression(Enum):
     KNOCK_DOWN = "knock-down"
     KNOCK_SIDEWAYS = "knock-sideways"
     OVEREXPRESSION = "overexpression"
+
+
+class NeuronPolarity(Enum):
+    UNIPOLAR = "unipolar"  # Neurons with a single process
+    BIPOLAR = "bipolar"  # Neurons with two processes (one axon, one dendrite)
+    ANAXONIC = "anaxonic"  # Neurons without a clear axon
+    PSEUDOUNIPOLAR = "pseudounipolar"  # Neurons with a single process that divides into two branches
+    MULTIPOLAR = "multipolar"  # Neurons with one axon and multiple dendrites
+
+
+class NeuronType(Enum):
+    BASKET = "basket"  # Inhibitory interneurons in the brain
+    BETZ = "betz"  # Large pyramidal neurons in the primary motor cortex
+    LUGARO = "lugaro"  # Neurons in the cerebellar cortex
+    MEDIUM_SPINY = "medium spiny"  # Principal neurons of the striatum
+    PURKINJE = "purkinje"  # Large neurons in the cerebellar cortex
+    PYRAMIDAL = "pyramidal"  # Neurons with pyramid-shaped cell bodies in the cerebral cortex
+    RENSHAW = "renshaw"  # Interneurons in the spinal cord
+    UNIPOLAR_BRUSH = "unipolar brush"  # Neurons found in the cerebellum
+    GRANULE = "granule"  # Small neurons in the cerebellum and olfactory bulb
+    MOTOR = "motor"  # Neurons that send impulses to muscles
+    SPINDLE = "spindle"  # Sensory neurons in muscles
+    FAN = "fan"  # A type of neuron (need more specific context)
+    STELLATE = "stellate"  # Star-shaped interneurons in the cerebral cortex
+    CHANDELIER = "chandelier"  # A type of inhibitory interneuron in the cerebral cortex
+    GOLGI = "golgi"  # Inhibitory interneurons in the cerebellum
+    MARTINOTTI = "martinotti"  # Interneurons found throughout the cerebral cortex
+    CAJAL_RETZIUS = "cajal_retzius"  # Early-developing neurons in the marginal zone of the cortex

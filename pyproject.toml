@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurometa"
-version = "1.1.0"
+version = "1.2.1"
 description = "Package for generating metadata related to neuroscience"
 authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]
 maintainers = ["Can H. Tartanoglu <canhtart@gmail.com>"]
@@ -18,19 +18,30 @@ packages = [{include = "neurometa"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 
-pandas = { version = "*", extras = ["performance", "excel"] }
+pandas = { version = "*", extras = ["performance", "excel"], optional = false }
 
 deepdiff = { version = "^5.8.0", optional = false }
 Wikipedia-API = { version = "^0.5.4", optional = false }
 
 [tool.poetry.extras]
-gen = ["Wikipedia-API", "deepdiff"]
+gen = ["Wikipedia-API", "deepdiff", "pandas"]
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
 isort = "*"
 
+[tool.isort]
+line_length = 120
+profile = "black"
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 120
+lint.ignore-init-module-imports = true
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
