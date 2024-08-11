@@ -1,7 +1,7 @@
 format:
-    poetry run black .
-    poetry run isort .
-    poetry run ruff check . --fix
+    black .
+    isort .
+    ruff check --fix --exit-zero .
 
 mypy:
     poetry run mypy -p syndb_cassandra

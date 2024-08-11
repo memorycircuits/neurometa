@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurometa"
-version = "1.2.1"
+version = "1.2.2"
 description = "Package for generating metadata related to neuroscience"
 authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]
 maintainers = ["Can H. Tartanoglu <canhtart@gmail.com>"]
@@ -26,7 +26,8 @@ Wikipedia-API = { version = "^0.5.4", optional = false }
 [tool.poetry.extras]
 gen = ["Wikipedia-API", "deepdiff", "pandas"]
 
-[tool.poetry.group.dev.dependencies]
+[tool.poetry.group.format.dependencies]
+ruff = "*"
 black = "*"
 isort = "*"
 
@@ -40,7 +41,6 @@ target-version = ["py311"]
 
 [tool.ruff]
 line-length = 120
-lint.ignore-init-module-imports = true
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
