@@ -49,7 +49,7 @@ class CulturalModelAnimalName(IntEnum):
     CRAYFISH = auto()
 
 
-model_animals_enum = {
+model_animal_to_cultural_name = {
     ModelAnimal.MUS_MUSCULUS: CulturalModelAnimalName.MOUSE,
     ModelAnimal.RATTUS_NORVEGICUS: CulturalModelAnimalName.RAT,
     ModelAnimal.MERIONES_UNGUICULATUS: CulturalModelAnimalName.GERBIL,
