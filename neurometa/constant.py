@@ -1,4 +1,4 @@
-from enum import Enum, auto, IntEnum
+from enum import Enum, IntEnum, auto
 
 
 class ModelAnimal(IntEnum):
@@ -70,7 +70,7 @@ animal_species_to_cultural_name = {
     ModelAnimal.DROSOPHILA_MELANOGASTER: CulturalModelAnimalName.FRUIT_FLY,
     ModelAnimal.CAENORHABDITIS_ELEGANS: CulturalModelAnimalName.NEMATODE_WORM,
     ModelAnimal.APLYSIA_CALIFORNICA: CulturalModelAnimalName.SEA_SLUG,
-    ModelAnimal.PROCAMBARUS_CLARKII: CulturalModelAnimalName.CRAYFISH
+    ModelAnimal.PROCAMBARUS_CLARKII: CulturalModelAnimalName.CRAYFISH,
 }
 
 cultural_name_to_animal_species = {v: k for k, v in animal_species_to_cultural_name.items()}
@@ -292,7 +292,6 @@ class BrainStructure(Enum):
     ARACHNOID_MATER = "arachnoid mater"
     ARBOR_VITAE = "arbor vitae"
     ARCUATE_FASCICULUS = "arcuate fasciculus"
-    AXON = "axon"
     BASILAR_ARTERY = "basilar artery"
     BASONUCLEUS_AMYGDALA = "basonucleus amygdala"
     BERGMANN_GLIA = "bergmann glia"
@@ -414,7 +413,6 @@ class BrainStructure(Enum):
     LENTICULOSTRIATE_ARTERIES = "lenticulostriate arteries"
     LINGUAL_GYRUS = "lingual gyrus"
     LINGUAL_SULCUS = "lingual sulcus"
-    LOBE = "lobe"
     LONGITUDINAL_FASCICULUS = "longitudinal fasciculus"
     LUSHKA_FORAMEN = "lushka foramen"
     MAGENDIE_FORAMEN = "magendie foramen"
@@ -424,22 +422,10 @@ class BrainStructure(Enum):
     MEDULLARY_RETICULOSPINAL_TRACT = "medullary reticulospinal tract"
     MEDULLARY_VELUM = "medullary velum"
     MENINGEAL_VESSELS = "meningeal vessels"
-    MENINGES = "meninges"
-    MICROGLIA = "microglia"
     MIDDLE_CEREBRAL_ARTERY = "middle cerebral artery"
     MIDDLE_CEREBRAL_VEIN = "middle cerebral vein"
     MIDDLE_TEMPORAL_GYRUS = "middle temporal gyrus"
     MIDLINE_NUCLEUS_THALAMUS = "midline nucleus thalamus"
-    MUELLER_CELL = "mueller cell"
-    MYELIN = "myelin"
-    NEUROFILAMENT = "neurofilament"
-    NEUROGLIA = "neuroglia"
-    NEURON = "neuron"
-    NEUROPIL = "neuropil"
-    NISSIL_BODY = "nissil body"
-    NODE_OF_RANVIER = "node of ranvier"
-    NODULUS = "nodulus"
-    NUCLEUS = "nucleus"
     NUCLEUS_AMYGDALA = "nucleus amygdala"
     NUCLEUS_THALAMUS = "nucleus thalamus"
     NUCLUES_ACCUMBENS = "nuclues accumbens"
@@ -530,8 +516,6 @@ class BrainStructure(Enum):
     ROSSENTHAL_VEIN = "rossenthal vein"
     RUBROSPINAL_TRACT = "rubrospinal tract"
     SAGITTAL_SINUS = "sagittal sinus"
-    SATELLITE_CELL = "satellite cell"
-    SCHWANN_CELL = "schwann cell"
     SECONDARY_AUDITORY_CORTEX = "secondary auditory cortex"
     SECONDARY_SOMATOSENSORY_CORTEX = "secondary somatosensory cortex"
     SECONDARY_VISUAL_CORTEX = "secondary visual cortex"
