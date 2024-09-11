@@ -428,7 +428,7 @@ class BrainStructure(Enum):
     MIDLINE_NUCLEUS_THALAMUS = "midline nucleus thalamus"
     NUCLEUS_AMYGDALA = "nucleus amygdala"
     NUCLEUS_THALAMUS = "nucleus thalamus"
-    NUCLUES_ACCUMBENS = "nuclues accumbens"
+    NUCLEUS_ACCUMBENS = "nucleus accumbens"
     OCCIPITAL_GYRUS = "occipital gyrus"
     OCCIPITAL_SINUS = "occipital sinus"
     OCCIPITAL_SULCUS = "occipital sulcus"
