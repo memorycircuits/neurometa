@@ -124,6 +124,7 @@ NEUROTRANSMITTER_ALIAS_MAP: Final[dict] = {
     "d": Neurotransmitter.ASPARTATE,
     "glutamate": Neurotransmitter.GLUTAMATE,
     "glu": Neurotransmitter.GLUTAMATE,
+    "glut": Neurotransmitter.GLUTAMATE,
     "e": Neurotransmitter.GLUTAMATE,
     "gamma-aminobutyric acid": Neurotransmitter.GAMMA_AMINOBUTYRIC_ACID,
     "gaba": Neurotransmitter.GAMMA_AMINOBUTYRIC_ACID,

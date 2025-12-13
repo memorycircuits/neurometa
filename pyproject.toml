@@ -1,47 +1,31 @@
-[tool.poetry]
+[project]
 name = "neurometa"
 version = "2.0.0"
 description = "Package for generating metadata related to neuroscience"
-authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]
-maintainers = ["Can H. Tartanoglu <canhtart@gmail.com>"]
-license = "BSD-3-Clause"
+authors = [
+    { name = "Can H. Tartanoglu", email = "canhtart@gmail.com" }
+]
+maintainers = [
+    { name = "Can H. Tartanoglu", email = "canhtart@gmail.com" }
+]
+license = { text = "BSD-3-Clause" }
 readme = "README.md"
-repository = "https://github.com/memorycircuits/neurometa"
+requires-python = ">=3.12,<4.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent"
 ]
+dependencies = [
+    "pydantic>=2",
+    "pandas[compression,parquet,excel]",
+    "deepdiff>=8.6",
+    "Wikipedia-API>=0.5.4"
+]
 
-packages = [{include = "neurometa"}]
-
-[tool.poetry.dependencies]
-python = ">=3.12,<4.0"
-pydantic = "^2"
-
-pandas = { version = "*", extras = [ "compression", "parquet", "excel" ] }
-deepdiff = { version = "^7.0.1", optional = false }
-Wikipedia-API = { version = "^0.5.4", optional = false }
-
-[tool.poetry.extras]
-gen = ["Wikipedia-API", "deepdiff", "pandas"]
-
-[tool.poetry.group.format.dependencies]
-ruff = "*"
-black = "*"
-isort = "*"
-
-[tool.isort]
-line_length = 120
-profile = "black"
-
-[tool.black]
-line-length = 120
-target-version = ["py311"]
-
-[tool.ruff]
-line-length = 120
+[project.urls]
+repository = "https://github.com/memorycircuits/neurometa"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.8.23,<0.9.0"]
+build-backend = "uv_build"
